@@ -6,6 +6,7 @@ namespace Amazeeio\PolydockAppAnythingLLM;
 
 // use Filament\Forms;
 // use Filament\Infolists;
+use Filament\Forms\Components\Component;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppStoreFields;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
@@ -18,11 +19,10 @@ use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp as GenericPolydock
 #[PolydockAppInstanceFields]
 class PolydockAnythingLLMApp extends GenericPolydockApp implements HasAppInstanceFormFields, HasStoreAppFormFields
 {
-
     public static string $version = '0.1.0';
 
     /**
-     * @return array<\Filament\Forms\Components\Component>
+     * @return array<Component>
      */
     #[\Override]
     public static function getStoreAppFormSchema(): array
@@ -40,7 +40,7 @@ class PolydockAnythingLLMApp extends GenericPolydockApp implements HasAppInstanc
     }
 
     /**
-     * @return array<\Filament\Forms\Components\Component>
+     * @return array<Component>
      */
     #[\Override]
     public static function getAppInstanceFormSchema(): array
