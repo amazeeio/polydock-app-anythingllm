@@ -101,9 +101,15 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
         $aiCredentials = $this->getPrivateAICredentialsFromBackend($appInstance);
 
         // Inject AI credentials as Lagoon variables using the new naming scheme
-        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_URL', $aiCredentials['litellm_api_url'], 'GLOBAL');
-        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_AI_KEY', $aiCredentials['litellm_token'], 'GLOBAL');
-        $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_PROVIDER', 'native', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_PROVIDER', 'litellm', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_BASE_PATH', $aiCredentials['litellm_api_url'], 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_API_KEY', $aiCredentials['litellm_token'], 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_PREF', 'chat', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_TOKEN_LIMIT', '8192', 'GLOBAL');
+
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_ENGINE', 'litellm', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_PREF', 'embeddings', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_MAX_CHUNK_LENGTH', '8192', 'GLOBAL');
 
         // Inject DB credentials
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_HOST', $aiCredentials['database_host'], 'GLOBAL');
