@@ -14,6 +14,7 @@ use FreedomtechHosting\PolydockApp\Contracts\HasAppInstanceFormFields;
 use FreedomtechHosting\PolydockApp\Contracts\HasStoreAppFormFields;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use FreedomtechHosting\PolydockApp\PolydockAppVariableDefinitionBase;
 use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp as GenericPolydockAiApp;
 
@@ -71,7 +72,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     }
 
     /**
-     * @throws \FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException
+     * @throws PolydockAppInstanceStatusFlowException
      */
     #[\Override]
     public function claimAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
@@ -102,8 +103,8 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
 
         // Inject AI credentials as Lagoon variables using the new naming scheme
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_PROVIDER', 'litellm', 'GLOBAL');
-        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_BASE_PATH', $aiCredentials['litellm_api_url'], 'GLOBAL');
-        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_API_KEY', $aiCredentials['litellm_token'], 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_URL', $aiCredentials['litellm_api_url'], 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_AI_KEY', $aiCredentials['litellm_token'], 'GLOBAL');
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_PREF', 'chat', 'GLOBAL');
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_TOKEN_LIMIT', '8192', 'GLOBAL');
 
