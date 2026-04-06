@@ -23,7 +23,7 @@ use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp as GenericPolydo
 #[PolydockAppInstanceFields]
 class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInstanceFormFields, HasStoreAppFormFields
 {
-    public static string $version = '0.1.1';
+    public static string $version = '0.1.3';
 
     /**
      * @return array<PolydockAppVariableDefinitionBase>
@@ -80,7 +80,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
         $functionName = __FUNCTION__;
         $logContext = $this->getLogContext($functionName);
 
-        $this->info($functionName.': starting AnythingLLM claim', $logContext);
+        $this->info("$functionName: starting AnythingLLM claim", $logContext);
 
         $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM);
 
