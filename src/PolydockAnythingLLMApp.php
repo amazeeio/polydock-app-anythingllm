@@ -79,6 +79,8 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     {
         $functionName = __FUNCTION__;
         $logContext = $this->getLogContext($functionName);
+        $projectName = $appInstance->getKeyValue('lagoon-project-name');
+        $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
 
         $this->info("$functionName: starting AnythingLLM claim", $logContext);
 
@@ -95,8 +97,16 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
             $this->info('Generated new JWT_SECRET for AnythingLLM', $logContext);
         }
 
-        // Set JWT_SECRET as Lagoon variable
+        $authToken = $appInstance->getKeyValue('anythingllm-auth-token');
+        if (empty($authToken)) {
+            $authToken = bin2hex(random_bytes(16));
+            $appInstance->storeKeyValue('anythingllm-auth-token', $authToken);
+            $this->info('Generated new AUTH_TOKEN for AnythingLLM', $logContext);
+        }
+
+        // Set auth variables before the claim completes so AnythingLLM can skip onboarding.
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'JWT_SECRET', $jwtSecret, 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'AUTH_TOKEN', $authToken, 'GLOBAL');
 
         // Get AI credentials from backend
         $aiCredentials = $this->getPrivateAICredentialsFromBackend($appInstance);
@@ -111,6 +121,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_ENGINE', 'litellm', 'GLOBAL');
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_PREF', 'embeddings', 'GLOBAL');
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_MAX_CHUNK_LENGTH', '8192', 'GLOBAL');
+        $this->addOrUpdateLagoonProjectVariable($appInstance, 'VECTOR_DB', 'lancedb', 'GLOBAL');
 
         // Inject DB credentials
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_HOST', $aiCredentials['database_host'], 'GLOBAL');
@@ -119,7 +130,32 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_NAME', $aiCredentials['database_name'], 'GLOBAL');
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_PORT', '5432', 'GLOBAL');
 
-        $this->info('Injected AI credentials (new naming scheme) and JWT_SECRET for AnythingLLM', $logContext);
+        $this->info('Injected AnythingLLM auth, model, vector, and database variables', $logContext);
+
+        $variablesOnlyDeployment = $this->lagoonClient->deployProjectEnvironmentByName(
+            $projectName,
+            $deployEnvironment,
+            ['LAGOON_VARIABLES_ONLY' => 'true']
+        );
+
+        if (isset($variablesOnlyDeployment['error'])) {
+            $errorMessage = \is_array($variablesOnlyDeployment['error'])
+                ? ($variablesOnlyDeployment['error'][0]['message'] ?? json_encode($variablesOnlyDeployment['error']))
+                : (string) $variablesOnlyDeployment['error'];
+
+            throw new \Exception('Failed to trigger Lagoon variables-only deployment: '.$errorMessage);
+        }
+
+        $latestDeploymentName = $variablesOnlyDeployment['deployEnvironmentBranch'] ?? null;
+        if (! empty($latestDeploymentName)) {
+            $appInstance->storeKeyValue('lagoon-latest-deployment-name', $latestDeploymentName);
+        }
+
+        $this->info('Triggered Lagoon variables-only deployment for AnythingLLM claim variables', $logContext + [
+            'projectName' => $projectName,
+            'deployEnvironment' => $deployEnvironment,
+            'deploymentName' => $latestDeploymentName,
+        ]);
 
         return parent::claimAppInstance($appInstance);
     }
