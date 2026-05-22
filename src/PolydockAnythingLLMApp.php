@@ -106,29 +106,45 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
 
         // Set auth variables before the claim completes so AnythingLLM can skip onboarding.
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'JWT_SECRET', $jwtSecret, 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'AUTH_TOKEN', $authToken, 'GLOBAL');
+        sleep(1);
 
         // Get AI credentials from backend
         $aiCredentials = $this->getPrivateAICredentialsFromBackend($appInstance);
 
         // Inject AI credentials as Lagoon variables using the new naming scheme
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_PROVIDER', 'litellm', 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_URL', $aiCredentials['litellm_api_url'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LLM_AI_KEY', $aiCredentials['litellm_token'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_PREF', 'chat', 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'LITE_LLM_MODEL_TOKEN_LIMIT', '8192', 'GLOBAL');
+        sleep(1);
 
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_ENGINE', 'litellm', 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_PREF', 'embeddings', 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'EMBEDDING_MODEL_MAX_CHUNK_LENGTH', '8192', 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'VECTOR_DB', 'lancedb', 'GLOBAL');
+        sleep(1);
 
         // Inject DB credentials
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_HOST', $aiCredentials['database_host'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_USER', $aiCredentials['database_username'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_PASS', $aiCredentials['database_password'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_NAME', $aiCredentials['database_name'], 'GLOBAL');
+        sleep(1);
         $this->addOrUpdateLagoonProjectVariable($appInstance, 'DB_PORT', '5432', 'GLOBAL');
+        sleep(1);
 
         $this->info('Injected AnythingLLM auth, model, vector, and database variables', $logContext);
 
