@@ -159,7 +159,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
                 ? ($variablesOnlyDeployment['error'][0]['message'] ?? json_encode($variablesOnlyDeployment['error']))
                 : (string) $variablesOnlyDeployment['error'];
 
-            throw new \Exception('Failed to trigger Lagoon variables-only deployment: '.$errorMessage);
+            throw new \Exception("Failed to trigger Lagoon variables-only deployment: {$errorMessage}");
         }
 
         $latestDeploymentName = $variablesOnlyDeployment['deployEnvironmentBranch'] ?? null;
